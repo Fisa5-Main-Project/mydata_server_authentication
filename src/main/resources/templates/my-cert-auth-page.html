@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>금융 인증서 발급</title>
+    <!-- CSS 링크 -->
+    <link rel="stylesheet" th:href="@{/css/auth-flow.css}">
+</head>
+<body>
+
+<!--
+  JavaScript가 이 .auth-container의 클래스를 변경하여
+  '하단 버튼'의 보이기/숨기기를 제어합니다.
+-->
+<div class="auth-container" id="auth-container">
+
+    <!--
+      [페이지 1] 약관 동의 (기본으로 표시)
+      JS가 .hidden 클래스를 추가/제거하여 페이지를 전환합니다.
+    -->
+    <section class="page-section" id="page-section-terms">
+        <div class="content">
+            <h1 class="title">서비스 이용을 위한<br>필수 동의 목록이에요.</h1>
+
+            <!-- 전체 동의 -->
+            <label for="check-all" class="check-group">
+                <input type="checkbox" id="check-all" class="check-input">
+                <span class="check-icon"></span>
+                <span class="check-label">
+                        <strong>전체 동의</strong>
+                        <small>선택 항목을 포함하여 모두 동의합니다.</small>
+                    </span>
+            </label>
+            <hr>
+
+            <!-- 개별 동의 리스트 -->
+            <ul class="consent-list">
+                <li>
+                    <label for="check-1" class="check-group">
+                        <input type="checkbox" id="check-1" class="check-input required-check">
+                        <span class="check-icon"></span>
+                        <span class="check-label">(필수) 개인정보 수집 및 이용 안내</span>
+                    </label>
+                    <a href="#" class="arrow">&gt;</a>
+                </li>
+                <li>
+                    <label for="check-2" class="check-group">
+                        <input type="checkbox" id="check-2" class="check-input required-check">
+                        <span class="check-icon"></span>
+                        <span class="check-label">(필수) 마이데이터 서비스 이용약관</span>
+                    </label>
+                    <a href="#" class="arrow">&gt;</a>
+                </li>
+                <li>
+                    <label for="check-3" class="check-group">
+                        <input type="checkbox" id="check-3" class="check-input required-check">
+                        <span class="check-icon"></span>
+                        <span class="check-label">(필수) 개인(신용)정보 전송요구서</span>
+                    </label>
+                    <a href="#" class="arrow">&gt;</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 하단 고정 버튼 (페이지 1) -->
+        <div class="button-container" id="button-container-terms">
+            <button type="button" id="btn-terms-next" class="btn-primary" disabled>다음</button>
+        </div>
+    </section>
+
+    <!--
+      [페이지 2] 본인 확인 (기본으로 숨겨짐)
+    -->
+    <section class="page-section hidden" id="page-section-identity">
+        <div class="content">
+            <h1 class="title">금융 인증서 받아오기 위한<br><strong>본인 확인</strong>을 해주세요</h1>
+
+            <div class="form-group">
+                <label for="name" class="form-label">이름</label>
+                <!-- [수정] value="" 삭제 -->
+                <input type="text" id="name" class="form-input identity-input" placeholder="이름을 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label for="rrn1" class="form-label">주민등록번호</label>
+                <div class="input-group">
+                    <!-- [수정] value="" 삭제 -->
+                    <input type="tel" id="rrn1" class="form-input identity-input" placeholder="생년월일 6자리" maxlength="6">
+                    <span>-</span>
+                    <!-- [수정] value="" 삭제 -->
+                    <input type="password" id="rrn2" class="form-input identity-input" placeholder="뒤 1자리" maxlength="1">
+                    <span class="dot-mask">●●●●●●</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="carrier" class="form-label">통신사</label>
+                <!-- [수정] value="" 삭제 (select로 변경 권장) -->
+                <input type="text" id="carrier" class="form-input identity-input" placeholder="통신사를 선택하세요">
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="form-label">휴대전화 번호</label>
+                <div class="input-group">
+                    <!-- [수정] value="" 삭제 -->
+                    <input type="tel" id="phone" class="form-input identity-input" placeholder="01012345678" maxlength="11">
+                    <button type="button" id="btn-request-sms" class="btn-secondary" disabled>인증번호 받기</button>
+                </div>
+            </div>
+
+            <!-- 인증번호 입력 (JS가 숨기거나 보여줌) -->
+            <div class="form-group hidden" id="sms-code-group">
+                <div class="input-group">
+                    <!-- [수정] value="" 삭제 -->
+                    <input type="tel" id="sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6">
+                    <span class="timer" id="timer">03:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 고정 버튼 (페이지 2) -->
+        <div class="button-container" id="button-container-identity">
+            <button type="button" id="btn-identity-next" class="btn-primary" disabled>다음</button>
+        </div>
+    </section>
+
+    <!--
+      [페이지 3] 정보 불러오기 (로딩)
+    -->
+    <section class="page-section hidden" id="page-section-loading">
+        <div class="content content-center">
+            <h1 class="title">정보를 불러오는 중이에요.</h1>
+            <p class="subtitle">최대 1분 정도 소요될 수 있어요.</p>
+
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <!-- JS가 이 텍스트를 업데이트합니다 -->
+                <div class="spinner-text" id="spinner-text">0%</div>
+            </div>
+        </div>
+        <!-- (하단 버튼 없음) -->
+    </section>
+
+    <!--
+      [페이지 4] 금융 인증서 선택
+    -->
+    <section class="page-section hidden" id="page-section-cert-select">
+        <div class="content content-center">
+            <div class="toast-message" id="toast-message">
+                금융 인증서를 불러왔어요
+            </div>
+
+            <h1 class="title hidden">금융 인증서 선택</h1>
+
+            <div class="cert-ui-placeholder">
+                금융인증서 UI
+            </div>
+        </div>
+
+        <!-- 하단 고정 버튼 (페이지 4) -->
+        <div class="button-container" id="button-container-cert-select">
+            <button type="button" id="btn-cert-select" class="btn-primary">선택하기</button>
+        </div>
+    </section>
+
+</div> <!-- /container -->
+
+<!--
+  [중요] SecurityConfig에서 /js/** 를 열어주었기 때문에
+  static/js/auth-flow.js 파일이 정상적으로 로드됩니다.
+-->
+<script th:src="@{/js/auth-flow.js}"></script>
+</body>
+</html>

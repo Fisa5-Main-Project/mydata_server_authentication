@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>정보 제공 동의</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth-flow.css}">
+    <style>
+        .button-container-split { display: flex; gap: 10px; }
+        .btn-deny { height: 60px; width: 100%; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: #E0E0E0; color: #333; flex-basis: 30%; }
+        .btn-primary { flex-basis: 70%; }
+    </style>
+</head>
+<body>
+
+<!--
+  [핵심] 폼의 action은 SAS의 /oauth2/authorize 입니다.
+-->
+<form class="auth-container" id="consent-form" th:action="@{/oauth2/authorize}" method="POST">
+
+    <!--
+      [!! 추가 !!] CSRF 공격 방지 토큰
+      Spring Security가 POST 요청을 허용하도록 이 토큰을 추가해야 합니다.
+    -->
+    <!--<input type="hidden" name="_csrf" th:value="${_csrf.token}" />-->
+
+
+    <div class="content">
+        <h1 class="title">
+            <span style="color: #FFA726; font-weight: bold;">마이데이터</span> 이용을 위한<br>
+            필수 동의 목록이에요.
+        </h1>
+
+        <!--
+          [핵심 1] OAuth 2.0 표준을 위한 필수 hidden input
+        -->
+        <input type="hidden" name="client_id" th:value="${clientId}">
+        <input type="hidden" name="state" th:value="${state}">
+
+        <!--
+          [핵심 2] 사용자가 동의할 '권한(scope)' 목록 (숨겨짐)
+        -->
+        <th:block th:each="scope : ${scopes}">
+            <input type="hidden" class="scope-input" name="scope" th:value="${scope}">
+        </th:block>
+
+
+        <!-- --- [UI 영역] --- -->
+
+        <!-- 2. [UI용] 전체 동의 체크박스 -->
+        <label for="check-all" class="check-group">
+            <input type="checkbox" id="check-all" class="check-input">
+            <span class="check-icon"></span>
+            <span class="check-label">
+                    <strong>전체 동의</strong>
+                    <small>선택 항목을 포함하여 모두 동의합니다.</small>
+                </span>
+        </label>
+
+        <hr>
+
+        <!-- 3. [UI용] 개별 동의 리스트 -->
+        <ul class="consent-list">
+            <li>
+                <label for="check-1" class="check-group">
+                    <input type="checkbox" id="check-1" class="check-input required-check">
+                    <span class="check-icon"></span>
+                    <span class="check-label">(필수) 개인정보 제3자 제공 동의</span>
+                </label>
+                <a href="#" class="arrow">&gt;</a>
+            </li>
+            <li>
+                <label for="check-2" class="check-group">
+                    <input type="checkbox" id="check-2" class="check-input required-check">
+                    <span class="check-icon"></span>
+                    <span class="check-label">(필수) 마이데이터 서비스 이용 동의</span>
+                </label>
+                <a href="#" class="arrow">&gt;</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 하단 고정 버튼 ('거부'와 '허용' 분리) -->
+    <div class="button-container button-container-split">
+        <button type="button" id="deny-button" class="btn-deny">거부</button>
+        <button type="submit" id="allow-button" class="btn-primary" disabled>허용</button>
+    </div>
+</form>
+
+<script th:src="@{/js/auth-flow-consent.js}"></script>
+</body>
+</html>
