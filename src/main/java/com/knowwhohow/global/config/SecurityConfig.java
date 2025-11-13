@@ -1,10 +1,13 @@
 package com.knowwhohow.global.config;
 
+import com.knowwhohow.global.entity.Member;
+import com.knowwhohow.repository.MemberRepository;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -28,6 +31,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -40,11 +45,15 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Optional;
 import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final MemberRepository memberRepository;
 
     /**
      * 인가 서버(SAS) 보안 필터 체인
@@ -125,29 +134,6 @@ public class SecurityConfig {
     }
 
     /**
-     * SAS 클라이언트 정보 리포지토리 (RegisteredClientRepository)
-     * - SAS에 "등록된" 클라이언트 앱의 정보를 관리
-     * - 실제로는 DB(JPA)로 연동해야 한다. 여기서는 테스트용으로 메모리에 등록
-     */
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("my-client-id") // 클라이언트 ID
-                .clientSecret(passwordEncoder().encode("my-client-secret")) // 클라이언트 시크릿 (암호화)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE) // 인가 코드 방식
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN) // 리프레시 토큰
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/my-client-id") // 리소스 서버(메인 서버)의 콜백 주소
-                .scope(OidcScopes.OPENID) // OIDC 스코프
-                .scope("my.data.read") // 커스텀 스코프 (예: 마이데이터 읽기)
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build()) // 동의 화면 표시
-                .build();
-
-        return new InMemoryRegisteredClientRepository(oidcClient);
-    }
-
-
-    /**
      * JWT 서명 키 소스 (JWKSource)
      * - Access Token을 JWT로 발급할 때 사용할 RSA 키 페어(공개키/개인키)를 제공
      */
@@ -192,5 +178,24 @@ public class SecurityConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
         // http://localhost:9000 (인가 서버의 주소)
         return AuthorizationServerSettings.builder().build();
+    }
+
+    /**
+     * JWT 토큰 커스터마이저(OAuth2TokenCustomizer)
+     * - Access Token에 추가적인 정보(claims)를 답기 위해 사용
+     */
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
+        return (context) -> {
+            if(context.getTokenType().getValue().equals("access_token")) {
+                String ci = context.getPrincipal().getName();
+                Optional<Member> memberOptional = memberRepository.findByCi(ci);
+
+                if (memberOptional.isPresent()) {
+                    Member member = memberOptional.get();
+                    context.getClaims().claim("ci", member.getCi());
+                }
+            }
+        };
     }
 }
