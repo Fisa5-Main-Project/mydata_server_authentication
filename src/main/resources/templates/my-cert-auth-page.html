@@ -78,17 +78,17 @@
 
             <div class="form-group">
                 <label for="name" class="form-label">이름</label>
-                <!-- [수정] value="" 삭제 -->
+                <!-- [수정] 불필요한 value="" 속성 제거 -->
                 <input type="text" id="name" class="form-input identity-input" placeholder="이름을 입력하세요">
             </div>
 
             <div class="form-group">
                 <label for="rrn1" class="form-label">주민등록번호</label>
-                <div class="input-group">
-                    <!-- [수정] value="" 삭제 -->
+                <div class="rrn-container">
+                    <!-- [수정] 불필요한 value="" 속성 제거 -->
                     <input type="tel" id="rrn1" class="form-input identity-input" placeholder="생년월일 6자리" maxlength="6">
                     <span>-</span>
-                    <!-- [수정] value="" 삭제 -->
+                    <!-- [수정] 불필요한 value="" 속성 제거 -->
                     <input type="password" id="rrn2" class="form-input identity-input" placeholder="뒤 1자리" maxlength="1">
                     <span class="dot-mask">●●●●●●</span>
                 </div>
@@ -96,23 +96,30 @@
 
             <div class="form-group">
                 <label for="carrier" class="form-label">통신사</label>
-                <!-- [수정] value="" 삭제 (select로 변경 권장) -->
-                <input type="text" id="carrier" class="form-input identity-input" placeholder="통신사를 선택하세요">
+                <!-- [수정] 사용자가 직접 입력하는 input 대신 select 태그로 변경 (UX 개선) -->
+                <select id="carrier" class="form-input identity-input">
+                    <option value="" disabled selected>통신사를 선택하세요</option>
+                    <option value="SKT">SKT</option>
+                    <option value="KT">KT</option>
+                    <option value="LGU+">LGU+</option>
+                    <option value="SKT_MVNO">SKT 알뜰폰</option>
+                    <option value="KT_MVNO">KT 알뜰폰</option>
+                    <option value="LGU+_MVNO">LGU+ 알뜰폰</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="phone" class="form-label">휴대전화 번호</label>
-                <div class="input-group">
-                    <!-- [수정] value="" 삭제 -->
+                <div class="input-with-button-container">
+                    <!-- [수정] 불필요한 value="" 속성 제거 -->
                     <input type="tel" id="phone" class="form-input identity-input" placeholder="01012345678" maxlength="11">
-                    <button type="button" id="btn-request-sms" class="btn-secondary" disabled>인증번호 받기</button>
+                    <button id="btn-request-sms" class="btn-secondary" disabled>인증번호 받기</button>
                 </div>
             </div>
 
             <!-- 인증번호 입력 (JS가 숨기거나 보여줌) -->
             <div class="form-group hidden" id="sms-code-group">
                 <div class="input-group">
-                    <!-- [수정] value="" 삭제 -->
                     <input type="tel" id="sms-code" class="form-input" placeholder="인증번호 6자리" maxlength="6">
                     <span class="timer" id="timer">03:00</span>
                 </div>
