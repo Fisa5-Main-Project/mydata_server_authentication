@@ -28,6 +28,8 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -45,6 +47,11 @@ import java.util.UUID;
 public class SecurityConfig {
 
     private final MemberRepository memberRepository;
+
+    @Bean
+    public RequestCache requestCache() {
+        return new HttpSessionRequestCache();
+    }
 
     /**
      * 인가 서버(SAS) 보안 필터 체인
@@ -77,6 +84,7 @@ public class SecurityConfig {
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
                 );
+
         return http.build();
     }
 
@@ -95,10 +103,11 @@ public class SecurityConfig {
                         .requestMatchers("/oauth/my-cert-auth",
                                 "/oauth/my-cert-callback",
                                 "/api/v1/cert/**",
+                                "/sms/**",
                                 "/css/**",
                                 "/js/**",
                                 "/error",
-                                "/favicon.ico"
+                                "/favicon.svg"
                         ).permitAll()
                         // 그 외 모든 요청은 반드시 '인증'을 요구
                         .anyRequest().authenticated()
