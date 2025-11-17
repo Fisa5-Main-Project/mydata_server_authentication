@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // JS 변수: 최종 CI 값을 저장할 곳
+    // JS 변수: 최종 CI 값과 SMS 인증 ID를 저장할 곳
     let finalCi = null;
+    let verificationId = null;
 
-    // --- 1. 페이지 섹션 DOM 참조 [!! 수정 !!] ---
-    // HTML의 ID (page-section-...)와 일치시킴
+    // --- 1. 페이지 섹션 DOM 참조 ---
     const pages = {
         terms: document.getElementById('page-section-terms'),
         identity: document.getElementById('page-section-identity'),
@@ -12,9 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
         certificate: document.getElementById('page-section-cert-select'),
     };
 
-    // --- 2. 페이지 1 (약관) 로직 [!! 수정 !!] ---
+    // --- 2. 페이지 1 (약관) 로직 ---
     const checkAll = document.getElementById('check-all');
-    // HTML의 클래스명 (.required-check)과 일치시킴
     const requiredChecks = pages.terms.querySelectorAll('.required-check');
     const allChecks = pages.terms.querySelectorAll('.check-input');
     const btnTermsNext = document.getElementById('btn-terms-next');
@@ -44,12 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const smsCodeGroup = document.getElementById('sms-code-group');
     const inputSmsCode = document.getElementById('sms-code');
     const btnIdentityNext = document.getElementById('btn-identity-next');
-    const timerEl = document.getElementById('timer'); // 타이머 요소
+    const timerEl = document.getElementById('timer');
 
     function validateIdentityInputs() {
         const nameValid = inputName.value.trim().length > 1;
         const rrn1Valid = /^\d{6}$/.test(inputRrn1.value);
-        const rrn2Valid = /^\d{1}$/.test(inputRrn2.value); // [수정] 1자리
+        const rrn2Valid = /^\d{1}$/.test(inputRrn2.value);
         const carrierValid = inputCarrier.value.trim().length > 0;
         const phoneValid = /^\d{10,11}$/.test(inputPhone.value);
 
@@ -62,13 +61,41 @@ document.addEventListener("DOMContentLoaded", () => {
             input.addEventListener('input', validateIdentityInputs);
         });
 
-        btnRequestSms.addEventListener('click', () => {
-            console.log('서버에 SMS 인증번호 요청');
-            // (실제 fetch/AJAX로 서버에 SMS 발송 요청)
-            btnRequestSms.textContent = '다시 요청';
-            btnRequestSms.disabled = true;
-            smsCodeGroup.classList.remove('hidden');
-            startTimer(180, btnRequestSms, validateIdentityInputs); // 타이머 시작
+        btnRequestSms.addEventListener('click', async () => {
+            try {
+                const payload = {
+                    name: inputName.value,
+                    rrn: `${inputRrn1.value}-${inputRrn2.value}`,
+                    telecom: inputCarrier.value,
+                    phoneNumber: inputPhone.value
+                };
+
+                const response = await fetch('/sms/send-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.isSuccess) {
+                    throw new Error(result.error?.message || 'SMS 발송에 실패했습니다.');
+                }
+
+                verificationId = result.data.verificationId;
+                const testAuthCode = result.data.authCode;
+
+                console.log('서버로부터 받은 verificationId:', verificationId);
+                console.log('테스트용 인증번호:', testAuthCode);
+                // -- alert(`테스트용 인증번호: ${testAuthCode}`);
+
+                btnRequestSms.textContent = '다시 요청';
+                smsCodeGroup.classList.remove('hidden');
+                startTimer(180, btnRequestSms, validateIdentityInputs);
+            } catch (error) {
+                console.error('SMS 요청 실패:', error);
+                alert(`오류가 발생했습니다: ${error.message}`);
+            }
         });
 
         inputSmsCode.addEventListener('input', () => {
@@ -76,11 +103,40 @@ document.addEventListener("DOMContentLoaded", () => {
             btnIdentityNext.disabled = !smsCodeValid;
         });
 
-        btnIdentityNext.addEventListener('click', () => {
-            // [수정] showPage 호출 전 null 체크
-            if (pages.loading) {
-                showPage('loading');
-                fetchCertificateData(); // 페이지 3 (로딩) API 호출
+        btnIdentityNext.addEventListener('click', async () => {
+            if (!verificationId) {
+                alert('인증번호를 먼저 요청해주세요.');
+                return;
+            }
+
+            try {
+                const confirmPayload = {
+                    verificationId: verificationId,
+                    authCode: inputSmsCode.value
+                };
+
+                const response = await fetch('/sms/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(confirmPayload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.isSuccess) {
+                    throw new Error(result.error?.message || '인증번호가 일치하지 않습니다.');
+                }
+
+                alert(result.data); // "인증번호가 일치합니다."
+                
+                if (pages.loading) {
+                    showPage('loading');
+                    fetchCertificateData();
+                }
+
+            } catch (error) {
+                console.error('SMS 확인 실패:', error);
+                alert(`인증 실패: ${error.message}`);
             }
         });
     }
@@ -96,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
             smsCode: inputSmsCode.value
         };
 
-        const loadingInterval = startFakeLoadingProgress(); // 가짜 로딩 시작
+        const loadingInterval = startFakeLoadingProgress();
 
         try {
             const response = await fetch('/api/v1/cert/fetch', {
@@ -110,23 +166,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(`서버 통신 실패: ${response.status} ${errorBody}`);
             }
 
-            const res = await response.json(); // FetchCertResponseDto
+            const res = await response.json();
+            finalCi = res.data.ci;
 
-            console.log('서버로부터 받은 CI:', res.data.ci);
-            finalCi = res.data.ci; // [중요] CI 값을 전역 변수에 저장
-
-            // 페이지 4 UI 업데이트
             const certUI = document.querySelector('.cert-ui-placeholder');
             if(certUI) certUI.textContent = res.data.certificateName;
 
-            clearInterval(loadingInterval); // 가짜 로딩 중지
-            showPage('certificate'); // [성공] 페이지 4 표시
+            clearInterval(loadingInterval);
+            showPage('certificate');
 
         } catch (error) {
             console.error('인증서 불러오기 실패:', error);
-            clearInterval(loadingInterval); // 로딩 중지
-            alert(`본인 확인에 실패했습니다: ${error.message}\n(Mock 데이터(홍길동/김영희)와 일치하는지 확인하세요)`);
-            showPage('identity'); // 오류 시 페이지 2로 복귀
+            clearInterval(loadingInterval);
+            alert(`본인 확인에 실패했습니다: ${error.message}`);
+            showPage('identity');
         }
     }
 
@@ -157,21 +210,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 showPage('identity');
                 return;
             }
-
-            // [호출] 유틸리티 함수 sendCiToServer 호출
             sendCiToServer(finalCi);
         });
     }
 
     // --- 6. 유틸리티 함수 ---
-
-    /**
-     * 지정된 ID의 페이지만 보여주고 나머지는 숨김
-     */
     function showPage(pageIdToShow) {
         Object.keys(pages).forEach(pageId => {
-            const pageElement = pages[pageId]; // JS 객체에서 DOM 요소를 가져옴
-            if (pageElement) { // [수정] 요소가 null이 아닌지 확인
+            const pageElement = pages[pageId];
+            if (pageElement) {
                 if (pageId === pageIdToShow) {
                     pageElement.classList.remove('hidden');
                 } else {
@@ -183,11 +230,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /**
-     * 인증번호 타이머 시작
-     */
     function startTimer(durationSeconds, btnRequest, validationFn) {
         let timer = durationSeconds;
+        btnRequest.disabled = true;
 
         const intervalId = setInterval(() => {
             let minutes = Math.floor(timer / 60);
@@ -197,14 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (--timer < 0) {
                 clearInterval(intervalId);
                 if(timerEl) timerEl.textContent = '시간만료';
-                if(btnRequest) validationFn(); // '다시 요청' 버튼 활성화 여부 재검증
+                if(btnRequest) validationFn();
             }
         }, 1000);
     }
 
-    /**
-     * [최종] CI 값을 서버로 전송 (Full Page POST)
-     */
     function sendCiToServer(ciValue) {
         console.log('최종 CI 전송 (form submit):', ciValue);
 

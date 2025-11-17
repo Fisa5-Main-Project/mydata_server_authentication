@@ -209,7 +209,11 @@ application-secret.yml
 *.properties
 application.yml
 
+# file settings
+build/
+mysql-data/
+
 # etc settings
 .gradle/
 .idea/
-.mysql-data/
+
