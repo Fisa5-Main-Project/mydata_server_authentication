@@ -6,6 +6,7 @@
     <title>정보 제공 동의</title>
 
     <link rel="stylesheet" th:href="@{/css/auth-flow.css}">
+    <link rel="icon" th:href="@{/favicon.svg}" type="image/svg+xml">
     <style>
         .button-container-split { display: flex; gap: 10px; }
         .btn-deny { height: 60px; width: 100%; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; background-color: #E0E0E0; color: #333; flex-basis: 30%; }
@@ -82,7 +83,7 @@
     </div>
 
     <!-- 하단 고정 버튼 ('거부'와 '허용' 분리) -->
-    <div class="button-container button-container-split">
+    <div class="button-container">
         <button type="submit" id="allow-button" class="btn-primary" disabled>허용</button>
     </div>
 </form>
