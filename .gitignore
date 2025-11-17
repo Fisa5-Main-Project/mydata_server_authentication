@@ -213,3 +213,7 @@ application.yml
 .gradle/
 .idea/
 .mysql-data/
+.build/
+
+build/
+mysql-data/
