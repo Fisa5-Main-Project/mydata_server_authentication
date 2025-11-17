@@ -87,11 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 console.log('서버로부터 받은 verificationId:', verificationId);
                 console.log('테스트용 인증번호:', testAuthCode);
-                alert(`테스트용 인증번호: ${testAuthCode}`);
+                // -- alert(`테스트용 인증번호: ${testAuthCode}`);
 
                 btnRequestSms.textContent = '다시 요청';
                 smsCodeGroup.classList.remove('hidden');
-                startTimer(240, btnRequestSms, validateIdentityInputs);
+                startTimer(180, btnRequestSms, validateIdentityInputs);
             } catch (error) {
                 console.error('SMS 요청 실패:', error);
                 alert(`오류가 발생했습니다: ${error.message}`);

@@ -10,7 +10,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class SmsCertificationRequestDTO {
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
     private String name;
@@ -25,5 +24,15 @@ public class SmsCertificationRequestDTO {
     @NotBlank(message = "전화번호는 필수 입력 항목입니다.")
     @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$", message = "유효하지 않은 전화번호 형식입니다.")
     private String phoneNumber;
+
+    @Override
+    public String toString() {
+        return "SmsCertificationRequestDTO{" +
+                "name='" + name + '\'' +
+                ", rrn='******-*******'" + // 마스킹 처리
+                ", telecom='" + telecom + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }
 

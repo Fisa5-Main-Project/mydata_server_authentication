@@ -57,11 +57,9 @@ public class SmsService {
         try {
             this.messageService.send(message);
             SmsVerificationData data = new SmsVerificationData(certificationCode, request, false);
-            Cache cache = cacheManager.getCache("sms-verification");
-            if (cache != null) {
-                cache.put(verificationId, data);
-                log.debug("SMS verification data cached with ID: {}", verificationId);
-            }
+            Cache cache = Objects.requireNonNull(cacheManager.getCache("sms-verification"));
+            cache.put(verificationId, data);
+            log.debug("SMS verification data cached with ID: {}", verificationId);
             log.debug("SMS sent successfully to {} with code {}", request.getPhoneNumber(), certificationCode);
             return verificationId;
         } catch (SolapiMessageNotReceivedException e) {
