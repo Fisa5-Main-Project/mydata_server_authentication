@@ -29,7 +29,7 @@ public class SmsCertificationRequestDTO {
     public String toString() {
         return "SmsCertificationRequestDTO{" +
                 "name='" + name + '\'' +
-                ", rrn='******-*******'" + // 마스킹 처리
+                ", rrn='******-*'" + // 마스킹 처리
                 ", telecom='" + telecom + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';

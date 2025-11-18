@@ -19,7 +19,7 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("sms-verification");
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(3, TimeUnit.MINUTES)); // 예: 5분 후 만료
+                .expireAfterWrite(3, TimeUnit.MINUTES));
         return cacheManager;
     }
 }
