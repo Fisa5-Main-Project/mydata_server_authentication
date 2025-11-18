@@ -1,27 +1,7 @@
-version: '3.8'
-
 services:
-  # 'my-data-auth' 이름의 MySQL 서비스 정의
-  my-data-auth:
-    image: mysql:8.0
-    # [중요] 컨테이너 이름을 'my-data-auth'로 고정
-    container_name: my-data-auth
+  backend:
+    image: ${DOCKER_USERNAME}/knowwhohow-auth:latest
+    container_name: backend
+    restart: always
     ports:
-      # 로컬 PC의 3306 포트와 컨테이너의 3306 포트를 연결
-      - "3307:3306"
-    environment:
-      # [필수] MySQL 루트 비밀번호 (테스트용)
-      MYSQL_ROOT_PASSWORD: 1234
-      # [필수] 우리가 사용할 DB 이름
-      MYSQL_DATABASE: my_data_auth_db
-      # [필수] 우리가 사용할 DB 사용자
-      MYSQL_USER: user
-      # [필수] 해당 사용자의 비밀번호
-      MYSQL_PASSWORD: password
-    volumes:
-      # (선택) DB 데이터를 로컬에 저장하여 컨테이너를 내려도 데이터가 유지되게 함
-      - ./mysql-data:/var/lib/mysql
-    command:
-      # UTF-8 설정을 기본으로 하도록 명령어 추가
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+      - "8377:8080"

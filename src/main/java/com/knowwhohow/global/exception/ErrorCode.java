@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    // 400 Bad Request
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON_001", "입력 값이 올바르지 않습니다."),
+
     // 500 Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_001", "서버 내부 오류가 발생했습니다."),
 
@@ -16,7 +19,14 @@ public enum ErrorCode {
     NOT_LOGIN_USER(HttpStatus.FORBIDDEN, "SECURITY_002", "로그인하지 않은 사용자입니다."),
 
     // certification exception
-    NOT_USER(HttpStatus.NOT_FOUND, "CERTIFICATION_001", "사용자를 찾을 수 없습니다.");
+    NOT_USER(HttpStatus.NOT_FOUND, "CERTIFICATION_001", "사용자를 찾을 수 없습니다."),
+
+    SMS_SEND_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "SMS_001", "SMS 전송에 실패했습니다."),
+    CERTIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "SMS_002", "인증 코드가 만료되었습니다."),
+    CERTIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SMS_003", "인증 코드를 찾을 수 없습니다."),
+    INVALID_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST, "SMS_004", "유효하지 않은 인증 코드입니다.");
+
+
 
 
     private final HttpStatus status;    // HTTP 상태

@@ -5,12 +5,37 @@ import com.knowwhohow.global.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * @Valid 어노테이션을 사용한 DTO의 유효성 검증 실패 시 발생하는 예외를 처리합니다.
+     *
+     * @param e MethodArgumentNotValidException
+     * @return 필드별 에러 메시지를 담은 400 Bad Request 응답
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        // 첫 번째 필드 에러의 메시지를 가져옵니다.
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        log.warn("Validation failed: {}", errorMessage);
+
+        return new ResponseEntity<>(
+                ApiResponse.onFailure(ErrorCode.INVALID_INPUT_VALUE.getCode(), errorMessage),
+                ErrorCode.INVALID_INPUT_VALUE.getStatus()
+        );
+    }
 
     /**
      * 서비스 로직에서 발생하는 모든 CustomException을 처리합니다.
