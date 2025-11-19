@@ -31,6 +31,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
@@ -47,6 +48,9 @@ import java.util.UUID;
 public class SecurityConfig {
 
     private final MemberRepository memberRepository;
+
+    @Value("${spring.security.oauth2.authorizationserver.issuer-uri}")
+    private String issuerUri;
 
     @Bean
     public RequestCache requestCache() {
@@ -107,7 +111,8 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/error",
-                                "/favicon.svg"
+                                "/favicon.svg",
+                                "/health"
                         ).permitAll()
                         // 그 외 모든 요청은 반드시 '인증'을 요구
                         .anyRequest().authenticated()
@@ -183,7 +188,7 @@ public class SecurityConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
         // http://localhost:9000 (인가 서버의 주소)
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer(issuerUri)
                 .build();
     }
 
