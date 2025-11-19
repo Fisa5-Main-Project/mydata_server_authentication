@@ -4,20 +4,34 @@ html, body {
     padding: 0;
     height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Malgun Gothic", "Dotum", sans-serif;
-    background-color: #F8F9FA; /* 2.1 본인확인 페이지 배경색 */
     color: #1A1A1A;
+
+    /* [수정]
+       - body에 회색 배경(#F8F9FA)을 적용합니다.
+       - [FIX] iPhone 16 Pro에서 전체 화면으로 나와야 하므로,
+       - PC 테스트용으로 넣었던 display: flex 관련 속성을 모두 제거합니다.
+    */
+    background-color: #F8F9FA;
 }
 
 .auth-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    box-sizing: border-box;
-    /* iPhone 16 Pro 모서리 둥근 느낌 */
-    background-color: #FFFFFF;
-    border-radius: 40px; /* 디바이스 모서리 둥근 느낌 (필요시) */
     overflow: hidden;
     position: relative;
+    background-color: #FFFFFF;
+
+    /* [수정]
+       - height: 100%를 사용해 body를 꽉 채웁니다.
+       - max-width를 두어 PC/태블릿에서는 너무 넓어지지 않게 합니다.
+       - margin: 0 auto로 PC/태블릿에서 중앙 정렬되도록 합니다.
+       - [FIX] PC 테스트용 box-shadow 및 max-height 제거
+    */
+    width: 100%;
+    height: 100%;
+    max-width: 430px; /* (PC/태블릿에서 중앙 정렬을 위한 최대 너비) */
+    margin: 0 auto; /* (PC/태블릿에서 중앙 정렬) */
+    border-radius: 40px; /* 디바이스 모서리 둥근 느낌 */
 }
 
 .page-section {
@@ -36,6 +50,10 @@ html, body {
     opacity: 0;
     pointer-events: none; /* 숨겨졌을 때 클릭 방지 */
     z-index: -1;
+}
+
+.hidden {
+    display: none !important;
 }
 
 .content {
@@ -118,7 +136,7 @@ html, body {
     color: #9E9E9E;
 }
 
-/* --- 페이지 1: 약관 동의 (생략, 이전 코드 참조) --- */
+/* --- 페이지 1: 약관 동의 --- */
 .check-group { display: flex; align-items: center; margin-bottom: 16px; cursor: pointer; }
 .check-input { display: none; }
 .check-icon { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background-color: #E0E0E0; margin-right: 12px; background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.5L5 8.5L13 1' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
@@ -134,7 +152,7 @@ hr { border: none; border-top: 1px solid #F0F0F0; margin: 20px 0; }
 
 /* --- 페이지 2: 본인 확인 --- */
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 24px;
     position: relative;
 }
 .form-group-split {
@@ -145,12 +163,29 @@ hr { border: none; border-top: 1px solid #F0F0F0; margin: 20px 0; }
 .form-input {
     width: 100%;
     height: 50px;
-    padding: 0 16px;
+    padding: 0 20px;
     border: 1px solid #E0E0E0;
     border-radius: 10px;
     font-size: 16px;
     box-sizing: border-box; /* 패딩 포함 크기 계산 */
+
+    /* [개선] select 태그도 input과 동일하게 보이도록 appearance 수정 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #FFFFFF; /* select 기본 배경색 제거 */
 }
+/* [추가] select 태그용 화살표 아이콘 */
+select.form-input {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239E9E9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 50px; /* 화살표 아이콘과 텍스트 겹침 방지 */
+}
+select.form-input:invalid {
+    color: #757575; /* placeholder 색상과 유사하게 (옵션) */
+}
+
 .form-input:read-only {
     background-color: #F5F5F5;
 }
@@ -169,58 +204,105 @@ hr { border: none; border-top: 1px solid #F0F0F0; margin: 20px 0; }
     font-size: 14px;
 }
 
+.rrn-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.rrn-container .form-input {
+    width: 100%; /* (flex-grow 1과 동일한 효과) */
+}
+.rrn-container .form-input[type="password"] {
+    flex-grow: 0;
+    width: 80px; /* "뒤 1자리" 칸 크기 고정 */
+    text-align: center;
+    padding-left: 10px; /* (가운데 정렬을 위한 조정) */
+    padding-right: 10px;
+}
+.rrn-container span {
+    font-size: 18px;
+    color: #BDBDBD;
+}
+/* [FIX]
+   - HTML의 'dot-mask' 클래스와 일치하도록 선택자 수정
+   - (기존: .rrn-dots)
+*/
+.rrn-container .dot-mask {
+    font-size: 18px;
+    color: #1A1A1A;
+    letter-spacing: 2px;
+    margin-left: 4px;
+}
+
+.input-with-button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.input-with-button-container .form-input {
+    flex-grow: 1;
+}
+.input-with-button-container .btn-secondary {
+    /* (크기는 .btn-secondary 기본값 60px 사용) */
+    white-space: nowrap; /* "인증번호 받기" 줄바꿈 방지 */
+}
+
 /* --- 페이지 3: 로딩 --- */
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-@keyframes progress-gradient {
-    0% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
 
-.loading-spinner {
+/* [FIX]
+   - HTML의 .spinner-container, .spinner, .spinner-text 구조에 맞게 CSS 수정
+   - (기존: .loading-spinner, .loading-percent)
+*/
+.spinner-container {
     width: 150px;
     height: 150px;
+    position: relative; /* 자식 요소(.spinner-text)를 absolute로 배치하기 위한 기준 */
+    margin-bottom: 20px; /* subtitle과의 간격 보정 */
+}
+
+.spinner {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
 
-    /* 그라데이션 테두리 */
+    /* 그라데이션 테두리 (JS가 이 값을 업데이트) */
     background: conic-gradient(
-            #FFA726 0% 55%, /* 오렌지색 (진행률) */
-            #F0F0F0 55% 100% /* 연한 회색 (배경) */
+            #FFA726 0% 0%, /* 예: 0% 55% */
+            #F0F0F0 0% 100% /* 예: 55% 100% */
     );
 
-    /* 회전 애니메이션 (실제로는 JS로 %를 변경해야 함) */
-    /* animation: spin 1.5s linear infinite; */
-
-    /* 가짜 회전 효과 (이미지 5번의 원이 도는 효과) */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative; /* ::after를 위한 기준 */
 }
-/* 회전 효과를 위한 가짜 그라데이션 테두리 (필요시) */
-/* .loading-spinner::before {
-    content: "";
-    position: absolute;
-    top: -5px; left: -5px; right: -5px; bottom: -5px;
-    border-radius: 50%;
-    background: linear-gradient(90deg, #FFA726, #FFFFFF);
-    animation: spin 1.5s linear infinite;
-    z-index: -1;
-} */
 
 /* 내부 원 (흰색) */
-.loading-spinner::after {
+.spinner::after {
     content: "";
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 120px;
     height: 120px;
     background-color: white;
     border-radius: 50%;
 }
 
-.loading-percent {
+.spinner-text {
+    /* [FIX] .spinner와 .spinner-text가 겹치도록 absolute로 변경 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     font-size: 32px;
     font-weight: bold;
     color: #FFA726;
@@ -242,7 +324,10 @@ hr { border: none; border-top: 1px solid #F0F0F0; margin: 20px 0; }
     color: #757575;
 }
 
-/* 페이지 4 배경색 오버라이드 */
-#page-certificate {
+/* [FIX]
+   - HTML의 ID 'page-section-cert-select'와 일치하도록 선택자 수정
+   - (기존: #page-certificate)
+*/
+#page-section-cert-select {
     background: linear-gradient(180deg, #FFF3E0 0%, #FFFFFF 50%);
 }
