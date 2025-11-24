@@ -40,9 +40,9 @@ public class DataSourceConfig {
 
         ReplicationRoutingDataSource routingDataSource = new ReplicationRoutingDataSource();
 
-        Map<Object, Object> dataSourceMap = new HashMap<>();
-        dataSourceMap.put(DataSourceType.MASTER, masterDataSource);
-        dataSourceMap.put(DataSourceType.SLAVE, slaveDataSource);
+        Map<Object, Object> dataSourceMap = Map.of(
+                DataSourceType.MASTER, masterDataSource,
+                DataSourceType.SLAVE, slaveDataSource);
 
         routingDataSource.setTargetDataSources(dataSourceMap);
         routingDataSource.setDefaultTargetDataSource(masterDataSource); // 기본은 Master
