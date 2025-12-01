@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -47,7 +48,17 @@ public class FinancialAuthController {
                                    HttpServletResponse response) throws IOException, ServletException {
 
         log.info("Processing my-cert-callback for CI: {}", ci);
+
+        if (ci == null || ci.isEmpty()) {
+            log.error("CI 값이 전달되지 않았습니다.");
+            throw new IllegalArgumentException("CI Parameter is missing");
+        }
+
         UserDetails userDetails = userDetailsService.findOrCreateUserByCi(ci);
+        if (userDetails == null) {
+            log.error("UserDetails를 찾을 수 없습니다. (CI: {})", ci);
+            throw new UsernameNotFoundException("User not found for CI: " + ci);
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
