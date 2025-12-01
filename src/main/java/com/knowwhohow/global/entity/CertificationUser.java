@@ -33,7 +33,7 @@ public class CertificationUser {
     private String carrier; // 통신사
 
     @Column(nullable = false)
-//    @Convert(converter = EncryptConverter.class)
+    @Convert(converter = EncryptConverter.class)
     private String phoneNumber; // 전화번호
 
     @Column(nullable = false, unique = true)
