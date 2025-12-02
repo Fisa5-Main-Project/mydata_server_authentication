@@ -2,6 +2,7 @@ package com.knowwhohow.service;
 
 import com.knowwhohow.dto.FetchCertRequestDTO;
 import com.knowwhohow.dto.FetchCertResponseDTO;
+import com.knowwhohow.global.config.AesUtil;
 import com.knowwhohow.global.config.HashUtil;
 import com.knowwhohow.global.exception.CustomException;
 import com.knowwhohow.global.exception.ErrorCode;
@@ -19,7 +20,9 @@ public class CertAuthService {
         String nameHash = hashUtil.generateHash(request.name());
         String phoneHash = hashUtil.generateHash(request.phone());
 
-        String ci = certificationUserRepository.findCiByNameAndPhoneNumberAndCarrier(nameHash, phoneHash, request.carrier());
+        String originCi = certificationUserRepository.findCiByNameAndPhoneNumberAndCarrier(nameHash, phoneHash, request.carrier());
+
+        String ci = AesUtil.encrypt(originCi);
 
         if(ci == null) {
             throw new CustomException(ErrorCode.NOT_USER);

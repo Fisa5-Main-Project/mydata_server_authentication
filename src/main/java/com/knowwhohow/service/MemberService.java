@@ -1,5 +1,6 @@
 package com.knowwhohow.service;
 
+import com.knowwhohow.global.config.AesUtil;
 import com.knowwhohow.global.entity.Member;
 import com.knowwhohow.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,13 @@ public class MemberService implements UserDetailsService {
 
     @Transactional
     public UserDetails findOrCreateUserByCi(String ci) {
+
+        String originCi = AesUtil.decrypt(ci);
+
         log.info("findOrCreateUserByCi 실행");
-        Member member = memberRepository.findByCi(ci)
+        Member member = memberRepository.findByCi(originCi)
                 .orElseGet(() -> {
-                    Member newMember = new Member(ci, "ROLE_USER");
+                    Member newMember = new Member(originCi, "ROLE_USER");
                     return memberRepository.save(newMember);
                 });
         log.info("memberRepository 실행");
@@ -51,8 +55,10 @@ public class MemberService implements UserDetailsService {
     private UserDetails buildUserDetails(Member member) {
         String notUsedPassword = passwordEncoder.encode("CI_AUTH_USER_NO_PASS");
 
+        String encryptCi = AesUtil.encrypt(member.getCi());
+
         return User.builder()
-                .username(member.getCi())
+                .username(encryptCi)
                 .password(notUsedPassword)
                 .authorities(getAuthorities(member.getRoles()))
                 .build();
