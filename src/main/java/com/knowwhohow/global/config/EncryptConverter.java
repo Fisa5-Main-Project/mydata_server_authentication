@@ -10,15 +10,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EncryptConverter implements AttributeConverter<String, String> {
 
-    private final AesUtil aesUtil;
-
     // DB에 저장할 때 (Insert/Update) -> 암호화 실행
     @Override
     public String convertToDatabaseColumn(String attribute) {
         if (attribute == null) {
             return null;
         }
-        return aesUtil.encrypt(attribute);
+        return AesUtil.encrypt(attribute);
     }
 
     // DB에서 불러올 때 (Select) -> 복호화 실행
@@ -27,6 +25,6 @@ public class EncryptConverter implements AttributeConverter<String, String> {
         if (dbData == null) {
             return null;
         }
-        return aesUtil.decrypt(dbData);
+        return AesUtil.decrypt(dbData);
     }
 }
