@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CertificationUserRepository extends JpaRepository<CertificationUser, Long> {
 
-    @Query("SELECT cu.ci FROM CertificationUser cu WHERE cu.nameHash = :nameHash AND cu.phoneNumberHash = :phoneHash AND cu.carrier = :carrier")
+    @Query("SELECT cu.ci FROM CertificationUser cu WHERE cu.nameHash = :nameHash AND cu.phoneNumberHash = :phoneNumberHash AND cu.carrier = :carrier")
     String findCiByNameAndPhoneNumberAndCarrier(@Param("nameHash") String nameHash,
                   @Param("phoneNumberHash") String phoneNumberHash,
                   @Param("carrier") String carrier);
