@@ -21,11 +21,16 @@ public enum ErrorCode {
     // certification exception
     NOT_USER(HttpStatus.NOT_FOUND, "CERTIFICATION_001", "사용자를 찾을 수 없습니다."),
 
+    // sms exception
     SMS_SEND_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "SMS_001", "SMS 전송에 실패했습니다."),
     CERTIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "SMS_002", "인증 코드가 만료되었습니다."),
     CERTIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SMS_003", "인증 코드를 찾을 수 없습니다."),
-    INVALID_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST, "SMS_004", "유효하지 않은 인증 코드입니다.");
+    INVALID_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST, "SMS_004", "유효하지 않은 인증 코드입니다."),
 
+    // Aes exception
+    FAIL_ENCRYPT(HttpStatus.FORBIDDEN, "AES_001", "암호화 실패"),
+    FAIL_DECRYPT(HttpStatus.FORBIDDEN, "AES_002", "복호화 실패"),
+    SHORT_KEY(HttpStatus.FORBIDDEN, "AES_003", "암호화 키 길이는 반드시 32자여야 합니다.");
 
 
 

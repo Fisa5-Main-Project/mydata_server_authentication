@@ -331,3 +331,131 @@ select.form-input:invalid {
 #page-section-cert-select {
     background: linear-gradient(180deg, #FFF3E0 0%, #FFFFFF 50%);
 }
+
+
+/* --- [페이지 4] 금융 인증서 카드 스타일 (새로 추가) --- */
+
+/* 전체 래퍼: 상단 여백 조절 */
+.cert-wrapper {
+    justify-content: flex-start; /* 중앙 정렬보다는 위에서부터 배치 */
+    padding-top: 60px;
+}
+
+/* 상단 텍스트 영역 */
+.cert-header-text {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    line-height: 1.5;
+}
+.cert-header-text .highlight {
+    color: #F57C00;
+    font-weight: bold; /* 이미 굵게 설정되어 있음 */
+}
+.cert-header-text strong {
+    font-size: 20px;
+    color: #000;
+}
+
+/* 주황색 카드 디자인 */
+.cert-card {
+    width: 280px;  /* 카드 너비 */
+    height: 420px; /* 카드 높이 */
+    /* 배경: 밝은 주황 -> 진한 주황 그라데이션 */
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(255, 152, 0, 0.4);
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff; /* 텍스트는 흰색 유지 */
+    position: relative;
+    margin-bottom: 24px;
+}
+
+/* 카드 내부 타이틀의 이름 부분 */
+.user-title .name-bold {
+    font-weight: 900; /* 700은 bold, 900은 더 두꺼운 bold */
+    font-size: 1.1em; /* 필요하면 크기도 살짝 키움 (선택사항) */
+}
+
+
+/* 카드 상단 (인증이력) */
+.card-top {
+    text-align: right;
+}
+.history-link {
+    font-size: 13px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/* 카드 본문 (이름, 유효기간) */
+.card-body {
+    margin-top: -40px; /* 약간 위로 올림 */
+}
+.user-title {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+.star-icon {
+    color: #FFD700; /* 금색 별 */
+    font-size: 22px;
+    vertical-align: middle;
+}
+.card-info {
+    font-size: 14px;
+    opacity: 0.9;
+}
+.info-row {
+    margin: 4px 0;
+}
+.info-row .label {
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+/* 카드 하단 (발급은행) */
+.card-footer {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.bank-label {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+.bank-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bank-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+/* 은행 아이콘 흉내 (실제 이미지가 있다면 img 태그로 교체) */
+.bank-icon-placeholder {
+    width: 24px;
+    height: 24px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    /* 실제로는 background-image: url(...) 사용 */
+}
+
+/* 카드 밑 '인증서관리' 링크 */
+.cert-bottom-menu {
+    margin-top: 10px;
+}
+.manage-link {
+    font-size: 15px;
+    color: #757575;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}

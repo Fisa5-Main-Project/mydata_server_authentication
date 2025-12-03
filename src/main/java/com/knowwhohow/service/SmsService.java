@@ -35,7 +35,7 @@ public class SmsService {
     private DefaultMessageService messageService;
 
     @PostConstruct
-    private void init() {
+    void init() {
         log.debug("Initializing CoolSMS message service.");
         this.messageService = SolapiClient.INSTANCE.createInstance(
                 coolSmsProperties.getApiKey(),
