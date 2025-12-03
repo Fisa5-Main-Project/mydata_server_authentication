@@ -154,19 +154,45 @@
       [페이지 4] 금융 인증서 선택
     -->
     <section class="page-section hidden" id="page-section-cert-select">
-        <div class="content content-center">
-            <div class="toast-message" id="toast-message">
-                금융 인증서를 불러왔어요
+
+        <div class="content content-center cert-wrapper">
+
+            <div class="cert-header-text">
+                <span class="highlight">사용자</span>님의 금융인증서비스<br>
+                <strong>금융인증서비스 관리</strong>
             </div>
 
-            <h1 class="title hidden">금융 인증서 선택</h1>
+            <div class="cert-card">
+                <div class="card-top">
+                    <span class="history-link">인증이력 &gt;</span>
+                </div>
 
-            <div class="cert-ui-placeholder">
-                금융인증서 UI
+                <div class="card-body">
+                    <h2 class="user-title">
+                        사용자님의<br>
+                        금융인증서 <span class="star-icon">★</span>
+                    </h2>
+
+                    <div class="card-info">
+                        <p class="info-row">
+                            <span class="value">010-****-****</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span class="bank-label">발급기관</span>
+                    <div class="bank-logo-area">
+                        <span class="bank-name">KnowHowWho</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cert-bottom-menu">
+                <a href="#" class="manage-link">인증서관리</a>
             </div>
         </div>
 
-        <!-- 하단 고정 버튼 (페이지 4) -->
         <div class="button-container" id="button-container-cert-select">
             <button type="button" id="btn-cert-select" class="btn-primary">선택하기</button>
         </div>

@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     phoneNumber: inputPhone.value
                 };
 
-                const response = await fetch('/sms/send-test', {
+                const response = await fetch('/sms/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -82,12 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     throw new Error(result.error?.message || 'SMS 발송에 실패했습니다.');
                 }
 
-                verificationId = result.data.verificationId;
-                const testAuthCode = result.data.authCode;
+                verificationId = result.data;
 
-                console.log('서버로부터 받은 verificationId:', verificationId);
-                console.log('테스트용 인증번호:', testAuthCode);
-                // -- alert(`테스트용 인증번호: ${testAuthCode}`);
+                // console.log('SMS 발송 성공. verificationId:', verificationId);
+                alert('인증번호가 발송되었습니다. 문자를 확인해주세요.');
 
                 btnRequestSms.textContent = '다시 요청';
                 smsCodeGroup.classList.remove('hidden');
@@ -141,6 +139,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function formatMaskedPhone(phone) {
+        if (!phone) return '';
+        // 숫자만 추출
+        const clean = phone.replace(/\D/g, '');
+        if (clean.length < 10) return clean;
+
+        // 010-XXXX-YYYY 형태 가정
+        const p1 = clean.substring(0, 3);
+        const p2 = clean.substring(3, 7);
+        const p3 = clean.substring(7);
+
+        // 가운데 2자리, 끝 2자리 마스킹 처리 예시
+        const maskedP2 = p2.substring(0, 2) + '**';
+        const maskedP3 = p3.substring(0, 2) + '**';
+
+        return `${p1}-${maskedP2}-${maskedP3}`;
+    }
+
     // --- 4. 페이지 3 (로딩) 로직 ---
     async function fetchCertificateData() {
         const payload = {
@@ -169,8 +185,27 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await response.json();
             finalCi = res.data.ci;
 
-            const certUI = document.querySelector('.cert-ui-placeholder');
-            if(certUI) certUI.textContent = res.data.certificateName;
+            // (1) 상단 텍스트 이름 ("홍길동"님의 금융인증서비스)
+            const topNameEl = document.querySelector('.cert-header-text .highlight');
+            if (topNameEl) {
+                // 서버 데이터가 없으면 입력한 값(inputName)을 사용
+                topNameEl.textContent = res.data.userName || inputName.value;
+            }
+
+            // (2) 카드 내부 타이틀 ("홍길동"님의 금융인증서)
+            const cardTitleEl = document.querySelector('.user-title');
+            if (cardTitleEl) {
+                const userName = res.data.userName || inputName.value;
+
+                cardTitleEl.innerHTML = `<span class="name-bold">${userName}</span>님의<br>금융인증서 <span class="star-icon">★</span>`;
+            }
+
+            // (3) 전화번호 (마스킹 처리)
+            const phoneEl = document.querySelector('.card-info .info-row:nth-child(1) .value');
+            if (phoneEl) {
+                const rawPhone = res.data.phoneNumber || inputPhone.value;
+                phoneEl.textContent = formatMaskedPhone(rawPhone);
+            }
 
             clearInterval(loadingInterval);
             showPage('certificate');
