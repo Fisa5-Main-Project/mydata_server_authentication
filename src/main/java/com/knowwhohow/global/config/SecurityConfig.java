@@ -186,7 +186,7 @@ public class SecurityConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
 
         return AuthorizationServerSettings.builder()
-                .issuer("http://us.loclx.io:8380")
+                .issuer("https://swteam4mydata.loclx.io/auth")
                 .build();
     }
 
