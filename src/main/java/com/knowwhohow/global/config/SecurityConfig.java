@@ -108,7 +108,9 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/error",
                                 "/favicon.svg",
-                                "/health"
+                                "/health",
+                                "/oauth2/**",
+                                "/.well-known/**"
                         ).permitAll()
                         // 그 외 모든 요청은 반드시 '인증'을 요구
                         .anyRequest().authenticated()
