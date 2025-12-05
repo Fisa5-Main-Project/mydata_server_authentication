@@ -187,7 +187,6 @@ public class SecurityConfig {
 
         return AuthorizationServerSettings.builder()
                 .issuer("http://us.loclx.io:8380")
-                .authorizationEndpoint("/auth")
                 .build();
     }
 
