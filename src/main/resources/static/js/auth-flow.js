@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     phoneNumber: inputPhone.value
                 };
 
-                const response = await fetch('/sms/send', {
+                const response = await fetch('/sms/send-test', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -82,7 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     throw new Error(result.error?.message || 'SMS 발송에 실패했습니다.');
                 }
 
-                verificationId = result.data;
+                const testResponse = result.data;
+                verificationId = testResponse.verificationId;
+                const debugCode = testResponse.certificationCode;
 
                 // console.log('SMS 발송 성공. verificationId:', verificationId);
                 alert('인증번호가 발송되었습니다. 문자를 확인해주세요.');
