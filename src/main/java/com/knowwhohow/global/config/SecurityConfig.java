@@ -184,8 +184,11 @@ public class SecurityConfig {
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        // http://localhost:9000 (인가 서버의 주소)
-        return AuthorizationServerSettings.builder().build();
+
+        return AuthorizationServerSettings.builder()
+                .issuer("http://us.loclx.io:8380")
+                .authorizationEndpoint("/auth")
+                .build();
     }
 
     /**
