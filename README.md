@@ -81,7 +81,7 @@ knowwhohow-auth/
 │       ├── application.yml      # 서버 설정
 │       └── authorization_schema.sql # SAS 표준 DB 스키마
 ├── docker/                          # Dockerfile
-└── build.gradle
+└── build.gradle```
 
 ---
 
@@ -96,8 +96,6 @@ Spring Authorization Server가 제공하는 표준 엔드포인트입니다.
 | POST | `/oauth2/introspect` | 토큰 유효성 검사 |
 | GET | `/.well-known/openid-configuration` | OIDC 설정 정보 조회 (Discovery Endpoint) |
 | GET | `/oauth2/jwks` | 공개키(Public Key) 조회 (리소스 서버 검증용) |
-
-> *상세 비즈니스 로직 API는 내부 보안 정책에 따라 생략합니다.*
 
 ---
 
