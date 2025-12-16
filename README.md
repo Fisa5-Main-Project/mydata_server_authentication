@@ -81,7 +81,8 @@ knowwhohow-auth/
 │       ├── application.yml      # 서버 설정
 │       └── authorization_schema.sql # SAS 표준 DB 스키마
 ├── docker/                          # Dockerfile
-└── build.gradle```
+└── build.gradle
+```
 
 ---
 
@@ -110,18 +111,22 @@ Spring Authorization Server가 제공하는 표준 엔드포인트입니다.
 **1. 레포지토리 클론**
 ```bash
 git clone [https://github.com/Fisa5-Main-Project/mydata_server_authentication.git](https://github.com/Fisa5-Main-Project/mydata_server_authentication.git)
-cd mydata_server_authentication```
+cd mydata_server_authentication
+```
 
 **2. DB 컨테이너 실행 (MySQL)**
 ```bash
-docker-compose up -d my-data-auth-db```
+docker-compose up -d my-data-auth-db
+```
 
 **3. DB 스키마 초기화**
 ```bash
 # SAS 표준 테이블 및 Mock 데이터 생성
-docker exec -i my-data-auth-db mysql -uuser -ppassword my_data_auth_db < authorization_schema.sql```
+docker exec -i my-data-auth-db mysql -uuser -ppassword my_data_auth_db < authorization_schema.sql
+```
 
 **4. 애플리케이션 빌드 및 실행**
 ```bash
 ./gradlew clean build
-java -jar build/libs/knowwhohow-auth-0.0.1-SNAPSHOT.jar```
+java -jar build/libs/knowwhohow-auth-0.0.1-SNAPSHOT.jar
+```
